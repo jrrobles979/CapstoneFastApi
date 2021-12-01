@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID, uuid4
 from fastapi import FastAPI, HTTPException
-from "models/models" import User, Gender, Role , UpdateUserRequest
+from models import User, Gender, Role , UpdateUserRequest
 
 
 app = FastAPI()
