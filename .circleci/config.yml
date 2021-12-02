@@ -38,12 +38,12 @@ jobs:
           name: build docker file
           command: |
             ls -l
-            ./run_docker
+            ./run_docker.sh
 
       - run:
           name: push docker file
           command: |
-            ./upload_docker $DOCKER_USER $DOCKER_PASS
+            ./upload_docker.sh $DOCKER_USER $DOCKER_PASS
 
 
 
