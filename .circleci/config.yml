@@ -37,7 +37,8 @@ jobs:
       - run:
           name: build docker file
           command: |            
-            ./run_docker.sh
+           docker build --tag=fastapiusers .
+           docker image ls
 
       - run:
           name: push docker file
