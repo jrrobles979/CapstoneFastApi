@@ -51,6 +51,10 @@ jobs:
       steps:
         - checkout
         - run:
+            name: Install tar utility
+            command: |
+              yum install -y tar gzip
+        - run:
             name: install kubectl
             command: |
               curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.12/2020-11-02/bin/linux/amd64/kubectl
