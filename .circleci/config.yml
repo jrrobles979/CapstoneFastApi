@@ -37,6 +37,7 @@ jobs:
       - run:
           name: build docker file
           command: |
+            ls -l
             ./run_docker
 
       - run:
@@ -49,14 +50,14 @@ jobs:
 workflows:
   default:
       jobs:
-        - build-capstone:
-            filters:
-                  branches: 
-                    only: main
+      #  - build-capstone:
+      #      filters:
+      #            branches: 
+      #              only: main
         - build-docker-and-upload:
             filters:
                   branches: 
                     only: main
-            requires: [build-capstone]
+      #      requires: [build-capstone]
 
 
