@@ -62,3 +62,8 @@ workflows:
             filters:
                   branches: 
                     only: main
+        - build-docker-and-upload:
+            filters:
+                  branches: 
+                    only: main
+
