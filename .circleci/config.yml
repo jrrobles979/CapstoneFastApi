@@ -28,16 +28,13 @@ jobs:
   build-docker-and-upload:
     docker:
       - image: circleci/golang:1.15
-        auth:
-            username: $DOCKER_USER
-            password: $DOCKER_PWD         
+        
     steps:
       - checkout
       - setup_remote_docker
       - run:
           name: build docker file
-          command: |
-            ls -l
+          command: |            
             ./run_docker.sh
 
       - run:

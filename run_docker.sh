@@ -10,7 +10,3 @@ docker build --tag=fastapiusers .
 # List docker images
 docker image ls
 
-# Step 3: 
-# Run  app
-docker run -p 8100:80 fastapiusers 
-
