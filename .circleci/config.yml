@@ -51,7 +51,7 @@ jobs:
       steps:
         - checkout
         - add_ssh_keys:
-            fingerprints: ["72:8a:d6:7d:e0:86:9c:9b:3c:14:49:c8:d0:65:04:db"] 
+            fingerprints: ["4e:6c:3b:d4:31:8b:4f:c1:1f:dc:65:77:98:b7:71:d5"] 
         - run:
             name: Install tar utility
             command: |
@@ -78,7 +78,7 @@ jobs:
               aws configure set default.region ${AWS_DEFAULT_REGION}
               aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
               aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}             
-              eksctl create cluster --name capstone-fastapi --region us-east-1  --ssh-access --ssh-public-key udagram-key-pair --managed
+              eksctl create cluster --name capstone-fastapi --region us-east-1  --ssh-access --ssh-public-key capstone-key-par --managed
 
 
 
