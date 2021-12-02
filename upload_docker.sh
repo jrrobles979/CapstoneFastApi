@@ -6,13 +6,13 @@
 # Step 1:
 # Create dockerpath
 # dockerpath=<your docker ID/path>
-dockerpath=jrrobles/apiusers
+dockerpath=jrrobles/fastapiusers
 
 
 # Step 2:  
 # Authenticate & tag
 docker login --username jrrobles
-docker tag apiusers $dockerpath
+docker tag fastapiusers $dockerpath
 echo "Docker ID and Image: $dockerpath"
 
 # Step 3:
