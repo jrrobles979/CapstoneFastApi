@@ -9,10 +9,18 @@ jobs:
       - restore_cache:
           keys: [fastapi-build]
       - run:
-          name: Instal fastapi
+          name: Install api-users
           command: |          
             ls -l
             make install
+      - run:
+          name: Run lint
+          command: |          
+           make lint
+      - run:
+          name: Run tests
+          command: |          
+           make test
 workflows:
   default:
       jobs:
