@@ -7,8 +7,9 @@
 
 setup:
 	# Create python virtualenv & source it	
-	# python3 -m venv ~/.capstone
-	# source ~/.capstone/bin/activate
+	python3 -m venv ~/.capstone
+	source ~/.capstone/bin/activate
+
 
 install:
 	# This should be run from inside a virtualenv
@@ -32,6 +33,6 @@ lint:
 	# This is a linter for Python source code linter: https://www.pylint.org/
 	# This should be run from inside a virtualenv
 
-	pylint --extension-pkg-whitelist='pydantic' --disable=R,C,W1203,W1202 app/main.py
+	pylint --extension-pkg-whitelist='pydantic' --disable=R,C,W1203,W1202,E1136 app/main.py
 
 all: install lint test
