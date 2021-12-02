@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # This file tags and uploads an image to Docker Hub
 
-# Assumes that an image is built via `run_docker.sh`
 
 # Step 1:
 # Create dockerpath
@@ -11,7 +10,8 @@ dockerpath=jrrobles/fastapiusers
 
 # Step 2:  
 # Authenticate & tag
-docker login --username jrrobles
+#docker login --username $1 --password $2
+echo "$2" | docker login --username $1 --password-stdin
 docker tag fastapiusers $dockerpath
 echo "Docker ID and Image: $dockerpath"
 
