@@ -11,7 +11,7 @@ jobs:
       - run:
           name: Instal fastapi
           command: |          
-            cd CAPSTONEFASTAPI
+            ls -l
             make install
 workflows:
   default:
