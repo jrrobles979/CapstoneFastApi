@@ -4,7 +4,7 @@ jobs:
     parameters:
       cluster-name:
         description: |
-          Capstone FastUser-Api EKS cluster
+          Capstone-FastUser-Api
         type: string
     steps:
       - checkout
@@ -20,7 +20,7 @@ jobs:
     parameters:
       cluster-name:
         description: |
-         Capstone FastUser-Api EKS cluster
+         Capstone-FastUser-Api
         type: string
     steps:
       - checkout
@@ -35,7 +35,7 @@ jobs:
     parameters:
       cluster-name:
         description: |
-          Name of the EKS cluster
+          Capstone-FastUser-Api
         type: string
     steps:
       - checkout
