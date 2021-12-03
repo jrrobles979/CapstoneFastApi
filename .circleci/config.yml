@@ -72,7 +72,7 @@ jobs:
         - run:
             name: delete cluster
             command: |                
-              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-2 --profile ${AWS_PROFILE}
+              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-1 --profile ${AWS_PROFILE}
         - run:
             name: create cluster
             command: |                
@@ -143,7 +143,7 @@ jobs:
         - run:
             name: delete cluster
             command: |                
-              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-2 --profile ${AWS_PROFILE}
+              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-1 --profile ${AWS_PROFILE}
        
        
 
