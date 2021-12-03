@@ -61,15 +61,13 @@ jobs:
             command: |
               curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.12/2020-11-02/bin/linux/amd64/kubectl
               chmod +x ./kubectl
-              mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
-              echo "kubectl version..."
-              kubectl version --short --client 
+              mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin             
+              kubectl version
         - run:
             name: Install eksctl
             command: |                                
               curl --silent --location https://github.com/weaveworks/eksctl/releases/download/0.47.0/eksctl_Linux_amd64.tar.gz | tar xz -C /tmp
-              mv /tmp/eksctl /usr/local/bin
-              echo "eksctl version..."
+              mv /tmp/eksctl /usr/local/bin              
               eksctl version
         - run:
             name: create cluster
@@ -78,10 +76,45 @@ jobs:
               aws configure set default.region ${AWS_DEFAULT_REGION}
               aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
               aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}             
-              eksctl create cluster --name capstone-fastapi --region us-east-1  --ssh-access --ssh-public-key capstone-key-par --managed
+              eksctl create cluster --name capstone-fastapi --region us-east-1  --ssh-access --ssh-public-key capstone-key-par --managed --profile ${AWS_PROFILE}
+        - run:
+            name: deploy docker image
+            command: |
+              kubectl apply -f eks-deployment.yml
+        - run:
+            name: check pods and nodes
+            command: |
+              #view your cluster nodes
+              echo "Getting cluster nodes..."
+              kubectl get nodes -o wide
+                
+              #Get pods on cluster
+              echo "Getting pods..."
+              kubectl get pods --all-namespaces -o wide
 
+              echo "Get Deployments ..."
+              kubectl get deployments
+        - run:
+            name: deploy docker
+            command: |
+               kubectl set image deployments/fastapi-users fastapi-users=jrrobles/fastapiusers:v2
+        - run:
+            name: rollout....
+            command: |               
+               kubectl rollout status deployments/fastapi-users
 
-
+        - run:
+            name: list deployments after rollout....
+            command: |               
+               kubectl rollout status deployments/fastapi-users
+        
+        - run:
+            name: check status....
+            command: |               
+               kubectl rollout status deployments/fastapi-users
+        
+        
+    
 workflows:
   default:
       jobs:
