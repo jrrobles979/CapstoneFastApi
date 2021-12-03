@@ -19,9 +19,9 @@ minikube kubectl -- get pods
 # Forward the container port to a host
 export POD_NAME=$(minikube kubectl -- get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 echo POD_NAME: $POD_NAME
-minikube kubectl -- expose deployment/fastapi-users --type="NodePort" --port 8000
+minikube kubectl -- expose deployment/fastapi-users --type="NodePort" --port 80
 
 #wait for 5m
 echo 'waiting to pod status is running...'
 sleep 300
-minikube kubectl -- port-forward pod/$POD_NAME 8100:80
+minikube kubectl -- port-forward pod/$POD_NAME 80:80

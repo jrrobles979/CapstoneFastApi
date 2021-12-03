@@ -1,45 +1,39 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fastapi-users
-  labels:
-    app:fastapi-users
-  namespace: default
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: fastapi-users
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        app: fastapi-users
-    spec:
-      containers:
-        - image: docker.io/jrrobles/fastapiusers
-          imagePullPolicy: Always
-          name: fastapi-users
-          ports:
-            - containerPort: 80
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fastapi-users
-  labels:
-    app: fastapi-users
-spec:
-  type: LoadBalancer
-  selector:
-    app: fastapi-users
-  ports:
-    - port: 80
-      targetPort: 80
-      nodePort: 8100
-      protocol: TCP
+{
+   "kind":"Deployment",
+   "apiVersion":"apps/v1",
+   "metadata":{
+      "name":"blue",
+      "labels":{
+         "app":"blue"
+      }
+   },
+   "spec":{
+      "replicas":1,
+      "selector":{
+         "matchLabels":{
+            "app":"blue"
+         }
+      },
+      "template":{
+         "metadata":{
+            "labels":{
+               "app":"blue"
+            }
+         },
+         "spec":{
+            "containers":[
+               {
+                  "name":"blue",
+                  "image":"andresaaap/testblueimage",
+                  "ports":[
+                     {
+                        "name":"http-server",
+                        "containerPort":80
+                     }
+                  ]
+               }
+            ]
+         }
+      }
+   }
+}

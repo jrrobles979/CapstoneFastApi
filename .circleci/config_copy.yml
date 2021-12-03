@@ -1,0 +1,171 @@
+version: 2.1
+
+jobs:
+  build-capstone:
+    docker:
+      - image: python:3.9
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [fastapi-build]
+      - run:
+          name: Setup env
+          command: |                    
+            make setup
+      - run:
+          name: Install requirements
+          command: |          
+            make install
+      - run:
+          name: Run lint
+          command: |          
+           make lint
+      - run:
+          name: Run tests
+          command: |          
+           make test
+
+  build-docker-and-upload:
+    docker:
+      - image: circleci/golang:1.15
+        auth:
+            username: $DOCKER_USER
+            password: $DOCKER_PWD         
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: build docker file
+          command: |            
+           docker build --tag=fastapiusers .
+           docker image ls
+
+      - run:
+          name: push docker file
+          command: |
+            ./upload_docker.sh $DOCKER_USER $DOCKER_PASS
+  
+  deploy-on-eks:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - add_ssh_keys:
+            fingerprints: ["4e:6c:3b:d4:31:8b:4f:c1:1f:dc:65:77:98:b7:71:d5"] 
+        - run:
+            name: Install tar utility
+            command: |
+              yum install -y tar gzip
+        - run:
+            name: install kubectl
+            command: |
+              curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.12/2020-11-02/bin/linux/amd64/kubectl
+              chmod +x ./kubectl
+              mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin              
+              kubectl version --short --client
+        - run:
+            name: Install eksctl
+            command: |                                
+              curl --silent --location https://github.com/weaveworks/eksctl/releases/download/0.47.0/eksctl_Linux_amd64.tar.gz | tar xz -C /tmp
+              mv /tmp/eksctl /usr/local/bin              
+              eksctl version
+        - run:
+            name: delete cluster
+            command: |                
+              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-1 --profile ${AWS_PROFILE}
+        - run:
+            name: create cluster
+            command: |                
+              echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+              aws configure set default.region ${AWS_DEFAULT_REGION}
+              aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+              aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}             
+              eksctl create cluster --name capstone-fastapi-v1 --region us-east-1  --ssh-access --ssh-public-key capstone-key-par --managed --profile ${AWS_PROFILE}
+        - run:
+            name: deploy docker image
+            command: |
+              kubectl apply -f eks-deployment.yml
+        - run:
+            name: check pods and nodes
+            command: |
+              #view your cluster nodes
+              echo "Getting cluster nodes..."
+              kubectl get nodes -o wide
+                
+              #Get pods on cluster
+              echo "Getting pods..."
+              kubectl get pods --all-namespaces -o wide
+
+              echo "Get Deployments ..."
+              kubectl get deployments
+        - run:
+            name: deploy docker
+            command: |
+               kubectl set image deployments/fastapi-users fastapi-users=jrrobles/fastapiusers:v2
+        - run:
+            name: rollout....
+            command: |               
+               kubectl rollout status deployments/fastapi-users
+
+        - run:
+            name: list deployments after rollout....
+            command: |               
+               kubectl rollout status deployments/fastapi-users
+        
+        - run:
+            name: check status....
+            command: |               
+               kubectl rollout status deployments/fastapi-users
+  delete-cluster:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - add_ssh_keys:
+            fingerprints: ["4e:6c:3b:d4:31:8b:4f:c1:1f:dc:65:77:98:b7:71:d5"] 
+        - run:
+            name: Install tar utility
+            command: |
+              yum install -y tar gzip
+        - run:
+            name: install kubectl
+            command: |
+              curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.12/2020-11-02/bin/linux/amd64/kubectl
+              chmod +x ./kubectl
+              mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin              
+              kubectl version --short --client
+        - run:
+            name: Install eksctl
+            command: |                                
+              curl --silent --location https://github.com/weaveworks/eksctl/releases/download/0.47.0/eksctl_Linux_amd64.tar.gz | tar xz -C /tmp
+              mv /tmp/eksctl /usr/local/bin              
+              eksctl version
+        - run:
+            name: delete cluster
+            command: |                
+              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-1 --profile ${AWS_PROFILE}
+       
+       
+
+        
+        
+    
+workflows:
+  default:
+      jobs:
+        - delete-cluster:
+            filters:
+                  branches: 
+                    only: main
+      #      requires: [build-docker-and-upload]
+      #  - build-capstone:
+      #      filters:
+      #            branches: 
+      #              only: main
+      # - build-docker-and-upload:
+      #      filters:
+      #            branches: 
+      #              only: main
+      #      requires: [build-capstone]
+        
+
