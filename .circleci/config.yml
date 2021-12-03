@@ -70,6 +70,10 @@ jobs:
               mv /tmp/eksctl /usr/local/bin              
               eksctl version
         - run:
+            name: delete cluster
+            command: |                
+              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-2 --profile ${AWS_PROFILE}
+        - run:
             name: create cluster
             command: |                
               echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
@@ -112,13 +116,44 @@ jobs:
             name: check status....
             command: |               
                kubectl rollout status deployments/fastapi-users
+  delete-cluster:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - add_ssh_keys:
+            fingerprints: ["4e:6c:3b:d4:31:8b:4f:c1:1f:dc:65:77:98:b7:71:d5"] 
+        - run:
+            name: Install tar utility
+            command: |
+              yum install -y tar gzip
+        - run:
+            name: install kubectl
+            command: |
+              curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.12/2020-11-02/bin/linux/amd64/kubectl
+              chmod +x ./kubectl
+              mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin              
+              kubectl version --short --client
+        - run:
+            name: Install eksctl
+            command: |                                
+              curl --silent --location https://github.com/weaveworks/eksctl/releases/download/0.47.0/eksctl_Linux_amd64.tar.gz | tar xz -C /tmp
+              mv /tmp/eksctl /usr/local/bin              
+              eksctl version
+        - run:
+            name: delete cluster
+            command: |                
+              eksctl delete cluster --name capstone-fastapi-v1 --region us-east-2 --profile ${AWS_PROFILE}
+       
+       
+
         
         
     
 workflows:
   default:
       jobs:
-        - deploy-on-eks:
+        - delete-cluster:
             filters:
                   branches: 
                     only: main
