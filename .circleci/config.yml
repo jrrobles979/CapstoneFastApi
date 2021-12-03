@@ -122,17 +122,12 @@ orbs:
 workflows:
   default:
       jobs:
-       - build-capstone:
-            filters:
-                  branches: 
-                    only: main
-       - build-docker-and-upload:
-            filters:
-                  branches: 
-                    only: main
+       - build-capstone           
+       - build-docker-and-upload:           
             requires: [build-capstone]
        - create-small-cluster:
-          cluster-name: eks-capstone-userapi
+          cluster-name: eks-capstone-userapi        
+          requires: [build-docker-and-upload]
        - create-service:
           cluster-name: eks-capstone-userapi
           requires:
