@@ -126,18 +126,18 @@ workflows:
        - build-docker-and-upload:           
             requires: [build-capstone]
        - create-small-cluster:
-          cluster-name: eks-capstone-userapi        
+          cluster-name: eks-capstone-userfastapi        
           requires: [build-docker-and-upload]
        - create-service:
-          cluster-name: eks-capstone-userapi
+          cluster-name: eks-capstone-userfastapi
           requires:
             - create-small-cluster
        - create-deployment:
-          cluster-name: eks-capstone-userapi
+          cluster-name: eks-capstone-userfastapi
           requires:
             - create-service
        - aws-eks/update-container-image:
-          cluster-name: eks-capstone-userapi
+          cluster-name: eks-capstone-userfastapi
           container-image-updates: 'blue=jrrobles/fastapiusers:latest'
           record: true
           requires:
